@@ -36,7 +36,7 @@ npm run verify:free
 
 Windows 音频工具上游下载地址是滚动资源，但只接受清单中的确切 SHA256。若上游替换该资源导致构建失败，应审阅新构建源码、许可和摘要后更新清单，不得跳过校验。
 
-本地开发先构建后台，然后运行 `npm run dev:electron`。默认真实用户数据在系统音乐目录下的 `Folia Free/`；自动测试使用独立 `--user-data-dir`。
+本地开发先构建后台，然后运行 `npm run dev:electron`。默认真实用户数据在系统音乐目录下的 `音乐站/`；自动测试使用独立 `--user-data-dir`。
 
 ## 发布
 

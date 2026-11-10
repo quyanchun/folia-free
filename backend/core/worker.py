@@ -7,6 +7,10 @@ import shutil
 import subprocess
 import sys
 
+for stream in (sys.stdin, sys.stdout, sys.stderr):
+    if stream is not None and hasattr(stream, 'reconfigure'):
+        stream.reconfigure(encoding='utf-8')
+
 BASE = Path(__file__).resolve().parent
 sys.path.insert(0, str(BASE / 'vendor'))
 
@@ -109,7 +113,7 @@ def run(payload):
     if shutil.which('ffprobe'):
         probe = subprocess.run(['ffprobe', '-v', 'error', '-show_entries',
                                 'stream=codec_type,codec_name,bit_rate:format=duration', '-of', 'json', str(path)],
-                               capture_output=True, text=True, timeout=10, check=True)
+                               capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10, check=True)
         media = json.loads(probe.stdout)
         streams = media.get('streams', [])
         stream = next((s for s in streams if s.get('codec_type') == 'audio'), None)

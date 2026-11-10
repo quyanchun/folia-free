@@ -45,7 +45,7 @@ function createMusicStationBridge({ app, protocol, net, dataRoot, onCacheWrite =
         if (ready) return ready;
         const root = app.isPackaged ? process.resourcesPath : path.resolve(__dirname, '../../.release-build/backend');
         const executable = path.join(root, 'music-station-service', process.platform === 'win32' ? 'music-station-service.exe' : 'music-station-service');
-        child = spawnProcess(executable, [], { env: { ...process.env, MUSIC_STATION_DATA: dataRoot }, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true });
+        child = spawnProcess(executable, [], { env: { ...process.env, MUSIC_STATION_DATA: dataRoot, PYTHONUTF8: '1', PYTHONIOENCODING: 'utf-8' }, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true });
         const running = child;
         child.stderr.on('data', chunk => console.warn('[MusicStation]', chunk.toString().trim()));
         ready = new Promise((resolve, reject) => {

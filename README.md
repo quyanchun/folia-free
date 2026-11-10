@@ -1,4 +1,4 @@
-# Folia Free
+# Folia 音乐站
 
 **内置网易云、QQ 音乐、酷狗、酷我、咪咕 5 个免费音源。下载发布包，解压或安装后即可搜索、听歌，无需配置音源或登录平台账号。**
 
@@ -6,16 +6,16 @@
 
 [下载最新版本](https://github.com/quyanchun/folia-free/releases/latest) · [所有版本](https://github.com/quyanchun/folia-free/releases) · [构建说明](docs/BUILD.md)
 
-![Folia Free：五源歌单与推荐](docs/screenshots/home.png)
+![Folia 音乐站：五源歌单与推荐](docs/screenshots/home.png)
 
 ## 下载与使用
 
 | 系统 | 发布文件 | 使用方法 |
 | --- | --- | --- |
-| macOS · Apple Silicon（M 系列） | `Folia-Free-版本-macOS-arm64.zip` | 解压，将 `Folia Free.app` 拖入应用程序 |
-| macOS · Intel | `Folia-Free-版本-macOS-x64.zip` | 解压，将 `Folia Free.app` 拖入应用程序 |
-| Windows 10/11 · 64 位 | `Folia-Free-版本-Windows-x64-Setup.exe` | 运行安装程序 |
-| Windows · 便携版 | `Folia-Free-版本-Windows-x64.zip` | 完整解压后运行 `Folia Free.exe` |
+| macOS · Apple Silicon（M 系列） | `Folia-Music-Station-版本-macOS-arm64.zip` | 解压，将 `Folia 音乐站.app` 拖入应用程序 |
+| macOS · Intel | `Folia-Music-Station-版本-macOS-x64.zip` | 解压，将 `Folia 音乐站.app` 拖入应用程序 |
+| Windows 10/11 · 64 位 | `Folia-Music-Station-版本-Windows-x64-Setup.exe` | 运行安装程序 |
+| Windows · 便携版 | `Folia-Music-Station-版本-Windows-x64.zip` | 完整解压后运行 `Folia 音乐站.exe` |
 
 运行时已包含本地音源服务、Python、FFmpeg / ffprobe，无需另装 Node.js、Python，也不依赖 NAS。首次使用选择「内置音源」即可；没有登录云账号时会默认使用内置音源。
 
@@ -37,11 +37,11 @@
 
 在此基础上增加了免登录五源聚合、公开歌单/推荐/专辑适配、独立数据目录及 Mac / Windows 自包含打包。音源服务部分基于 [0xHJK/music-dl](https://github.com/0xHJK/music-dl) 的 MIT 许可代码及本项目适配。
 
-Folia Free 的 `main` 分支包含当前完整修改源码，包括 `backend/` 和构建脚本。原作者、贡献者、版权声明和许可证均予保留，见 [NOTICE.md](NOTICE.md)、[THIRD_PARTY.md](THIRD_PARTY.md) 和 [LICENSE](LICENSE)。
+Folia 音乐站 的 `main` 分支包含当前完整修改源码，包括 `backend/` 和构建脚本。原作者、贡献者、版权声明和许可证均予保留，见 [NOTICE.md](NOTICE.md)、[THIRD_PARTY.md](THIRD_PARTY.md) 和 [LICENSE](LICENSE)。
 
 ## 数据与开发
 
-应用数据默认保存在系统「音乐」目录下的 `Folia Free/`，包括设置、封面、歌词、音频缓存、下载和后台数据；代码仓库不包含这些个人文件。使用独立测试 profile 时，数据写入该测试目录。
+应用数据默认保存在系统「音乐」目录下的 `音乐站/`，包括设置、封面、歌词、音频缓存、下载和后台数据；代码仓库不包含这些个人文件。使用独立测试 profile 时，数据写入该测试目录。
 
 技术栈沿用上游 Electron + React / TypeScript，内置源服务使用 Python。开发和打包步骤见 [docs/BUILD.md](docs/BUILD.md)。欢迎通过 Issue 反馈问题，请勿附带账号 Cookie、Token、密码或私人音乐库。
 

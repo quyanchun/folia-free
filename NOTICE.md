@@ -1,6 +1,6 @@
 # 来源与修改声明
 
-Folia Free 是独立的社区修改版本，不是 Folia-major 官方发行版。
+Folia 音乐站 是独立的社区修改版本，不是 Folia-major 官方发行版。
 
 - 上游：[chthollyphile/folia-major](https://github.com/chthollyphile/folia-major)。基于 `main` 分支历史的 `v0.7.27`，提交 `4a545c96229664c0e07d4fb04971264e8d75fdd2`。
 - 原作者：chthollyphile 及 Folia 贡献者。原有版权声明与根目录 AGPL-3.0 许可证保留。

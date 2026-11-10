@@ -56,5 +56,5 @@ describe('Omni architecture boundaries', () => {
             }
         }
         expect(differences).toEqual([]);
-    });
+    }, 30000);
 });

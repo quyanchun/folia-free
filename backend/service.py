@@ -12,6 +12,11 @@ import threading
 import time
 from urllib.parse import urlsplit
 
+# Frozen Windows builds do not necessarily inherit Python UTF-8 mode.
+for stream in (sys.stdin, sys.stdout, sys.stderr):
+    if stream is not None and hasattr(stream, 'reconfigure'):
+        stream.reconfigure(encoding='utf-8')
+
 HERE = Path(__file__).resolve().parent
 CORE = HERE / 'core'
 sys.path.insert(0, str(CORE))
@@ -53,7 +58,7 @@ class DesktopApp(App):
                          library=self.data / '下载', database=self.data / '后台数据/downloads.sqlite3')
         self.RequestHandlerClass = DesktopHandler
         try:
-            catalog = json.loads(self.catalog_path.read_text())
+            catalog = json.loads(self.catalog_path.read_text(encoding='utf-8'))
         except (OSError, ValueError):
             catalog = {}
         for key, entry in catalog.items():
@@ -67,7 +72,7 @@ class DesktopApp(App):
             entries = {key: {**entry, **({'file': str(entry['file'])} if entry.get('file') else {})}
                        for key, entry in self.records.items()}
             temporary = self.catalog_path.with_suffix('.tmp')
-            temporary.write_text(json.dumps(entries, ensure_ascii=False))
+            temporary.write_text(json.dumps(entries, ensure_ascii=False), encoding='utf-8')
             temporary.replace(self.catalog_path)
 
     def remember(self, songs):
@@ -112,7 +117,7 @@ class DesktopApp(App):
                 result['rawLrc'] = (lyrics.get('lrc') or {}).get('lyric', '')
                 result['translation'] = (lyrics.get('tlyric') or {}).get('lyric', '')
                 if result['rawLrc']:
-                    (self.data / '歌词' / (key + '.lrc')).write_text(result['rawLrc'])
+                    (self.data / '歌词' / (key + '.lrc')).write_text(result['rawLrc'], encoding='utf-8')
             except (requests.RequestException, ValueError):
                 pass
         with self.lock:
@@ -229,7 +234,7 @@ class DesktopHandler(Handler):
 
 
 def main():
-    data = Path(os.environ.get('MUSIC_STATION_DATA', str(Path.home() / 'Music/Folia Free')))
+    data = Path(os.environ.get('MUSIC_STATION_DATA', str(Path.home() / 'Music/音乐站')))
     app = DesktopApp(data)
     print(json.dumps({'ready': True, 'port': app.server_port, 'sources': sorted(SOURCES)}, ensure_ascii=False), flush=True)
     def stop(*_):

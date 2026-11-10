@@ -8,7 +8,7 @@ import { _electron } from '@playwright/test';
 const root = process.cwd();
 const built = JSON.parse(fs.readFileSync(path.join(root, '.release-build/package-result.json')));
 const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'folia-free-smoke-'));
-const executable = built.platform === 'darwin' ? path.join(built.app, 'Contents/MacOS/Folia') : path.join(built.app, 'Folia Free.exe');
+const executable = built.platform === 'darwin' ? path.join(built.app, 'Contents/MacOS/Folia') : path.join(built.app, 'Folia 音乐站.exe');
 const runtime = await _electron.launch({ executablePath: executable, args: [`--user-data-dir=${profile}`], timeout: 60000 });
 try {
     const identity = await runtime.evaluate(({ app }) => ({ packaged: app.isPackaged, version: app.getVersion(), userData: app.getPath('userData') }));
@@ -24,7 +24,10 @@ try {
     const tools = path.join(resources, 'music-station-service/_internal/tools');
     assert.equal(fs.existsSync(path.join(tools, built.platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg')), true);
     assert.equal(fs.existsSync(path.join(tools, built.platform === 'win32' ? 'ffprobe.exe' : 'ffprobe')), true);
-    console.info('[FoliaFree] Packaged smoke test passed', { platform: built.platform, arch: built.arch, version: built.version });
+    for (const file of ['PYTHON-LICENSE.txt', 'FFMPEG-GPL-3.0.txt', 'ffmpeg-license.txt', 'ffmpeg-build.txt']) {
+        assert.equal(fs.existsSync(path.join(resources, 'music-station-service/_internal/licenses', file)), true, `Missing ${file}`);
+    }
+    console.info('[MusicStation] Packaged smoke test passed', { platform: built.platform, arch: built.arch, version: built.version });
 } finally {
     await runtime.close();
     fs.rmSync(profile, { recursive: true, force: true });

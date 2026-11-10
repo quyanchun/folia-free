@@ -3885,7 +3885,7 @@ export default {
   },
   "releaseNotes": {
     "v1_0_0": {
-      "intro": "Folia Free menyertakan lima sumber musik publik tanpa perlu masuk.",
+      "intro": "Folia 音乐站 menyertakan lima sumber musik publik tanpa perlu masuk.",
       "builtIn": {
             "title": "Sumber bawaan",
             "description": "Cari lagu gratis dari NetEase, QQ Music, Kugou, Kuwo, dan Migu."

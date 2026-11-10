@@ -3885,7 +3885,7 @@ export default {
   },
   "releaseNotes": {
     "v1_0_0": {
-      "intro": "Folia Free：内置五个免费音源，下载即可使用。",
+      "intro": "Folia 音乐站：内置五个免费音源，下载即可使用。",
       "builtIn": {
             "title": "内置音源",
             "description": "聚合网易云、QQ 音乐、酷狗、酷我、咪咕的公开免费曲目，无需登录。"

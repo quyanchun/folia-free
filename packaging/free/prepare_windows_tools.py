@@ -4,7 +4,7 @@ import hashlib
 import json
 import os
 import shutil
-import urllib.request
+import requests
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -13,7 +13,11 @@ cache = ROOT / '.release-cache'
 cache.mkdir(exist_ok=True)
 archive = cache / 'windows-ffmpeg.zip'
 if not archive.exists():
-    urllib.request.urlretrieve(manifest['url'], archive)
+    with requests.get(manifest['url'], stream=True, timeout=60) as response:
+        response.raise_for_status()
+        with archive.open('wb') as target:
+            for chunk in response.iter_content(1024 * 1024):
+                target.write(chunk)
 if hashlib.sha256(archive.read_bytes()).hexdigest() != manifest['sha256']:
     raise SystemExit('Windows audio tools checksum mismatch; update the manifest only after reviewing upstream')
 output = cache / 'windows-tools'

@@ -3885,7 +3885,7 @@ export default {
   },
   "releaseNotes": {
     "v1_0_0": {
-      "intro": "Folia Free tích hợp năm nguồn nhạc công khai, không cần đăng nhập.",
+      "intro": "Folia 音乐站 tích hợp năm nguồn nhạc công khai, không cần đăng nhập.",
       "builtIn": {
             "title": "Nguồn tích hợp",
             "description": "Tìm nhạc miễn phí trên NetEase, QQ Music, Kugou, Kuwo và Migu."

@@ -1,6 +1,6 @@
 {
-  "name": "folia-free",
-  "productName": "Folia Free",
+  "name": "folia-major",
+  "productName": "Folia 音乐站",
   "desktopName": "folia-major.desktop",
   "description": "内置五个免费音源的开源音乐播放器，基于 Folia。",
   "author": {
@@ -66,8 +66,8 @@
     "verify:free": "node packaging/free/smoke.mjs"
   },
   "build": {
-    "appId": "io.github.quyanchun.foliafree",
-    "productName": "Folia Free",
+    "appId": "io.github.quyanchun.musicstation",
+    "productName": "Folia 音乐站",
     "beforePack": "build/beforePack.cjs",
     "afterPack": "build/afterPack.cjs",
     "electronLanguages": [

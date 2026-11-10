@@ -6,7 +6,9 @@ import os
 from pathlib import Path
 import re
 import secrets
-from socketserver import ThreadingUnixStreamServer
+import socketserver
+
+ThreadingUnixStreamServer = getattr(socketserver, 'ThreadingUnixStreamServer', None)
 import signal
 import shutil
 import subprocess
@@ -85,7 +87,7 @@ class App(ThreadingHTTPServer):
                 raise ValueError('服务正在关闭')
             process = subprocess.Popen([sys.executable, str(BASE / 'worker.py')],
                                        stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                       stderr=subprocess.PIPE, text=True, cwd=BASE,
+                                       stderr=subprocess.PIPE, text=True, encoding='utf-8', cwd=BASE,
                                        env=dict(os.environ, PYTHONDONTWRITEBYTECODE='1'))
             self.processes.add(process)
         try:
@@ -104,7 +106,7 @@ class App(ThreadingHTTPServer):
                         raise
                     request = None
                     try:
-                        current = Path(payload['progress_path']).read_text()
+                        current = Path(payload['progress_path']).read_text(encoding='utf-8')
                         if current != previous:
                             progress(json.loads(current))
                             previous = current
@@ -166,11 +168,13 @@ class App(ThreadingHTTPServer):
             return self.records[token]['file'], result
 
 
-class Gateway(ThreadingUnixStreamServer):
+class Gateway(ThreadingUnixStreamServer or object):
     daemon_threads = True
     prefix = '/app/music-dl'
 
     def __init__(self, path, app):
+        if ThreadingUnixStreamServer is None:
+            raise ValueError('Unix gateway is unavailable on this platform')
         self.app = app
         socket_path = Path(path)
         if socket_path.exists():

@@ -31,10 +31,10 @@ if (!fs.existsSync(archive)) {
 }
 if (digest(archive) !== asset.sha256) throw new Error('Upstream runtime checksum mismatch');
 run(process.execPath, ['node_modules/vite/bin/vite.js', 'build'], { cwd: root,
-    env: { ...process.env, ELECTRON: 'true', ELECTRON_DEV: 'false', APP_VERSION_LABEL: 'Folia Free', APP_RELEASE_CHANNEL: 'internal' } });
+    env: { ...process.env, ELECTRON: 'true', ELECTRON_DEV: 'false', APP_VERSION_LABEL: 'Folia 音乐站', APP_RELEASE_CHANNEL: 'internal' } });
 const extracted = path.join(build, 'upstream');
 const staged = path.join(build, 'asar-source');
-const app = path.join(build, platform === 'darwin' ? 'Folia Free.app' : 'Folia Free-win32-x64');
+const app = path.join(build, platform === 'darwin' ? 'Folia 音乐站.app' : 'Folia 音乐站-win32-x64');
 for (const dir of [extracted, staged, app]) fs.rmSync(dir, { recursive: true, force: true });
 fs.mkdirSync(extracted, { recursive: true });
 const sevenZip = platform === 'win32' ? 'C:\\Program Files\\7-Zip\\7z.exe' : null;
@@ -104,17 +104,17 @@ const integrity = crypto.createHash('sha256').update(asar.getRawHeader(outputAsa
 let artifact;
 if (platform === 'darwin') {
     const plist = path.join(app, 'Contents/Info.plist');
-    for (const [key, value] of Object.entries({ CFBundleIdentifier: 'io.github.quyanchun.foliafree', CFBundleDisplayName: 'Folia Free',
+    for (const [key, value] of Object.entries({ CFBundleIdentifier: 'io.github.quyanchun.musicstation', CFBundleDisplayName: 'Folia 音乐站',
         CFBundleShortVersionString: metadata.version, CFBundleVersion: metadata.version })) {
         run('plutil', ['-replace', key, '-string', value, plist]);
     }
     run('plutil', ['-replace', 'ElectronAsarIntegrity', '-json', JSON.stringify({ 'Resources/app.asar': { algorithm: 'SHA256', hash: integrity } }), plist]);
     run('codesign', ['--force', '--deep', '--sign', '-', app]);
     run('codesign', ['--verify', '--deep', '--strict', app]);
-    artifact = path.join(release, `Folia-Free-${metadata.version}-macOS-${arch}.zip`);
+    artifact = path.join(release, `Folia-Music-Station-${metadata.version}-macOS-${arch}.zip`);
     run('ditto', ['-c', '-k', '--sequesterRsrc', '--keepParent', app, artifact]);
 } else {
-    const executable = path.join(app, 'Folia Free.exe');
+    const executable = path.join(app, 'Folia 音乐站.exe');
     fs.renameSync(path.join(app, 'Folia.exe'), executable);
     const { NtExecutable, NtExecutableResource, Resource } = require('resedit');
     const pe = NtExecutable.from(fs.readFileSync(executable), { ignoreCert: true });
@@ -124,7 +124,7 @@ if (platform === 'darwin') {
     for (const version of versions) {
         version.setFileVersion(metadata.version); version.setProductVersion(metadata.version);
         for (const language of version.getAllLanguagesForStringValues()) version.setStringValues(language, {
-            ProductName: 'Folia Free', FileDescription: 'Folia Free', InternalName: 'Folia Free', OriginalFilename: 'Folia Free.exe',
+            ProductName: 'Folia 音乐站', FileDescription: 'Folia 音乐站', InternalName: 'Folia 音乐站', OriginalFilename: 'Folia 音乐站.exe',
         });
         version.outputToResourceEntries(resource.entries);
     }
@@ -133,7 +133,7 @@ if (platform === 'darwin') {
     // The original updater feed must never point this fork back to Folia-major.
     run(process.execPath, ['node_modules/electron-builder/cli.js', '--win', 'nsis', 'zip', '--x64', '--prepackaged', app, '--publish', 'never', '--config', 'packaging/free/builder.cjs'],
         { cwd: root, env: { ...process.env, CSC_IDENTITY_AUTO_DISCOVERY: 'false' } });
-    artifact = path.join(release, `Folia-Free-${metadata.version}-Windows-x64-Setup.exe`);
+    artifact = path.join(release, `Folia-Music-Station-${metadata.version}-Windows-x64-Setup.exe`);
 }
 fs.writeFileSync(path.join(build, 'package-result.json'), JSON.stringify({ app, artifact, platform, arch, version: metadata.version, upstream: manifest.commit, asarHeaderSHA256: integrity }, null, 2));
-console.info('[FoliaFree] Packaged', artifact);
+console.info('[MusicStation] Packaged', artifact);

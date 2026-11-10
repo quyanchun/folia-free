@@ -3885,7 +3885,7 @@ export default {
   },
   "releaseNotes": {
     "v1_0_0": {
-      "intro": "Folia Free includes five public music sources, ready to use without signing in.",
+      "intro": "Folia 音乐站 includes five public music sources, ready to use without signing in.",
       "builtIn": {
             "title": "Built-in sources",
             "description": "Search publicly available free tracks across NetEase, QQ Music, Kugou, Kuwo and Migu."
