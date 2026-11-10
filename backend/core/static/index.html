@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>music-dl · 音乐搜索</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23292e27'/%3E%3Cpath d='M13 25V14l14-3v11M13 17l14-3' stroke='%23c5e490' stroke-width='3' fill='none'/%3E%3Ccircle cx='10' cy='26' r='4' fill='%23c5e490'/%3E%3Ccircle cx='24' cy='23' r='4' fill='%23c5e490'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./style.css">
+  <script defer src="./app.js"></script>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <a class="brand" href="./" aria-label="music-dl 首页"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>music-dl<span class="brand-period">.</span></a>
+      <div class="header-tools"><button id="downloads-toggle" type="button" aria-expanded="false" aria-controls="downloads-panel">下载管理 <span id="downloads-count">0/0</span></button><span class="local"><span></span>音乐站</span></div>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="title">
+        <h1 id="title">下一首，<span>听什么。</span></h1>
+        <div id="search-panel">
+        <form id="search-form" class="search" role="search">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg>
+          <span class="source-select-wrap"><select id="source-select" aria-label="搜索源">
+            <option value="all" selected>全部</option>
+            <option value="netease">网易云</option>
+            <option value="kuwo">酷我</option>
+            <option value="qq">QQ音乐</option>
+            <option value="kugou">酷狗</option>
+            <option value="bilibili">B站音频</option>
+            <option value="migu">咪咕</option>
+          </select></span>
+          <label class="sr-only" for="query">歌名或歌手</label>
+          <input id="query" name="query" type="search" placeholder="搜索歌名或歌手" autocomplete="off" maxlength="100" required>
+          <button id="search-button" type="submit"><span>搜索</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></button>
+        </form>
+        </div>
+      </section>
+
+      <section class="library" aria-labelledby="results-title" aria-busy="false">
+        <nav class="platform-tabs" role="tablist" aria-label="榜单平台">
+          <span class="filter-label">榜单源</span>
+          <button id="platform-netease" type="button" role="tab" data-platform="netease" aria-selected="true" aria-controls="chart-browser">网易云</button>
+          <button id="platform-kuwo" type="button" role="tab" data-platform="kuwo" aria-selected="false" aria-controls="chart-browser" tabindex="-1">酷我</button>
+          <button id="platform-qq" type="button" role="tab" data-platform="qq" aria-selected="false" aria-controls="chart-browser" tabindex="-1">QQ音乐</button>
+          <button id="platform-kugou" type="button" role="tab" data-platform="kugou" aria-selected="false" aria-controls="chart-browser" tabindex="-1">酷狗</button>
+          <button id="platform-migu" type="button" role="tab" data-platform="migu" aria-selected="false" aria-controls="chart-browser" tabindex="-1">咪咕</button>
+        </nav>
+        <div id="chart-browser" role="tabpanel" aria-labelledby="platform-netease">
+        <nav class="browse-bar chart-tabs" aria-label="榜单与搜索结果" role="tablist">
+          <button id="tab-hot" type="button" role="tab" data-view="hot" aria-selected="true" aria-controls="music-panel">热歌榜</button>
+          <button id="tab-new" type="button" role="tab" data-view="new" aria-selected="false" aria-controls="music-panel" tabindex="-1">新歌榜</button>
+          <button id="tab-rising" type="button" role="tab" data-view="rising" aria-selected="false" aria-controls="music-panel" tabindex="-1">飙升榜</button>
+          <button id="tab-search" class="search-tab" type="button" role="tab" hidden data-view="search" aria-selected="false" aria-controls="music-panel" tabindex="-1">搜索结果</button>
+        </nav>
+        <div id="music-panel" role="tabpanel" aria-labelledby="tab-hot">
+        <div class="section-head"><h2 id="results-title"><span id="results-label">热歌榜</span> <span id="count"></span></h2><span id="search-term"></span></div>
+        <div id="notice" role="status" aria-live="polite" hidden></div>
+        <div id="search-tools" class="search-tools" hidden>
+          <button id="back-to-chart" class="back-to-chart" type="button">← 返回榜单</button>
+          <div id="source-filter" class="source-filter" role="group" aria-label="按来源筛选搜索结果"></div>
+        </div>
+        <div id="empty" class="empty" hidden>
+          <div class="record" aria-hidden="true"><div class="record-label"><span>m.</span></div></div>
+          <h3 id="empty-title">从一首歌开始</h3>
+          <p id="empty-subtitle">输入歌名，找到你想听的声音</p>
+        </div>
+        <div id="loading" class="loading" aria-label="正在加载榜单"><div></div><div></div><div></div><div></div></div>
+        <div id="results" hidden>
+          <div class="bulk-tools">
+            <label><input id="select-all" type="checkbox">全选当前显示</label>
+            <span id="selected-count">已选 0 首</span>
+            <div class="bulk-actions">
+              <button id="batch-play" type="button" disabled title="播放第一首，其余按顺序加入待播队列">播放所选</button>
+              <button id="batch-download" type="button" disabled>下载所选</button>
+            </div>
+          </div>
+          <div class="table-head" aria-hidden="true"><span>曲目 / 歌手</span><span>来源</span><span>时长</span><span>试听 / 下载</span></div>
+          <ol id="songs"></ol>
+          <div id="load-status" class="load-status" role="status" aria-live="polite" hidden><span id="load-status-text"></span><button id="load-retry" type="button" hidden>重试</button></div>
+          <div id="load-sentinel" aria-hidden="true"></div>
+        </div>
+        </div>
+        </div>
+      </section>
+    </main>
+    <footer><span>为每一次想听。</span><span>MUSIC-DL <span class="footer-divider">/</span> LISTEN</span></footer>
+  </div>
+  <section id="downloads-panel" class="downloads-panel" aria-label="下载管理" hidden>
+    <header><strong>下载管理</strong><div><button id="downloads-pause" type="button">暂停</button><button id="downloads-clear" type="button">清除完成记录</button><button id="downloads-close" type="button" aria-label="收起下载管理">×</button></div></header>
+    <p id="downloads-summary" role="status" aria-live="polite"></p>
+    <progress id="downloads-progress" aria-label="歌曲准备进度" max="1" value="0"></progress>
+    <p id="downloads-empty">暂无下载任务</p>
+    <ol id="download-jobs"></ol>
+    <div class="downloads-location"><span id="downloads-size">已就绪 0 MB</span><span>文件保留 24 小时</span></div>
+  </section>
+  <section id="player" class="player-dock" aria-label="音乐播放器" hidden>
+    <div class="player-copy"><strong id="player-title"></strong><span id="player-artist"></span><span id="player-status" role="status" aria-live="polite"></span></div>
+    <audio id="player-audio" controls preload="metadata" aria-label="当前歌曲"></audio>
+    <div class="player-actions">
+      <button id="player-next" class="player-icon" type="button" aria-label="下一首" title="下一首" disabled><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 4 9 6-9 6Zm11 0v12"/></svg></button>
+      <button id="queue-toggle" type="button" aria-expanded="false" aria-controls="player-queue">队列 <span id="queue-count">0</span></button>
+      <button id="player-close" class="player-icon" type="button" aria-label="关闭播放器并清空队列" title="关闭播放器" ><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg></button>
+    </div>
+    <section id="player-queue" class="player-queue" aria-label="待播队列" hidden>
+      <header><span>接下来播放</span><button id="queue-clear" type="button">清空</button></header>
+      <p id="queue-empty">暂无待播歌曲</p>
+      <ol id="queue-list"></ol>
+    </section>
+  </section>
+</body>
+</html>

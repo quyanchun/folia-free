@@ -1,0 +1,112 @@
+name: Build and release Folia Free
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: folia-free-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: ${{ matrix.target }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: macOS-arm64
+            os: macos-15
+            arch: arm64
+          - target: macOS-x64
+            os: macos-15-intel
+            arch: x64
+          - target: Windows-x64
+            os: windows-latest
+            arch: x64
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Cache verified runtime downloads
+        uses: actions/cache@v4
+        with:
+          path: .release-cache
+          key: free-runtime-${{ runner.os }}-${{ matrix.arch }}-${{ hashFiles('packaging/free/upstream.json') }}
+      - name: Check release identity
+        shell: bash
+        run: |
+          node -e 'const p=require("./package.json"); if(!/^\d+\.\d+\.\d+$/.test(p.version)) throw Error("Invalid version"); if(process.env.GITHUB_REF_TYPE === "tag" && process.env.GITHUB_REF_NAME !== "v"+p.version) throw Error("Tag/version mismatch"); if(process.arch !== "${{ matrix.arch }}") throw Error("Wrong runner architecture")'
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Install Python dependencies
+        run: python -m pip install -r backend/core/requirements.txt pyinstaller==6.22.3
+      - name: Install macOS audio tools
+        if: runner.os == 'macOS'
+        run: brew install ffmpeg
+      - name: Prepare Windows audio tools
+        if: runner.os == 'Windows'
+        run: python packaging/free/prepare_windows_tools.py
+      - name: Typecheck and targeted regression tests
+        shell: bash
+        run: |
+          npm run typecheck
+          npm run test:unit -- test/unit/onlineMusic/stationProvider.test.ts test/unit/electron/musicStationBridge.test.ts test/unit/electron/publicCatalog.test.ts test/unit/library/core/homeSources.test.ts test/unit/onlineMusic/omniArchitecture.test.ts
+          python -m unittest discover -s test/backend -v
+      - name: Build self-contained backend
+        run: npm run build:backend
+      - name: Package native release
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: npm run package:free
+      - name: Smoke test final application
+        run: npm run verify:free
+      - name: Upload packages
+        uses: actions/upload-artifact@v6
+        with:
+          name: folia-free-${{ matrix.target }}
+          if-no-files-found: error
+          path: |
+            release/*.zip
+            release/*-Setup.exe
+
+  release:
+    name: Publish verified packages
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v7
+        with:
+          path: release
+          merge-multiple: true
+      - name: Check artifacts and generate checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION=$(node -p 'require("./package.json").version')
+          for asset in "Folia-Free-$VERSION-macOS-arm64.zip" "Folia-Free-$VERSION-macOS-x64.zip" "Folia-Free-$VERSION-Windows-x64.zip" "Folia-Free-$VERSION-Windows-x64-Setup.exe"; do
+            test -s "release/$asset"
+          done
+          (cd release && sha256sum *.zip *.exe > SHA256SUMS.txt)
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          gh release create "$GITHUB_REF_NAME" --verify-tag --title "Folia Free $GITHUB_REF_NAME" --notes-file docs/releases/v1.0.0.md release/*

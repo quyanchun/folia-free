@@ -1,0 +1,15 @@
+{
+  "repository": "chthollyphile/folia-major",
+  "branch": "main",
+  "tag": "v0.7.27",
+  "commit": "4a545c96229664c0e07d4fb04971264e8d75fdd2",
+  "assets": {
+    "darwin-arm64": { "name": "Folia-0.7.27-arm64.zip", "sha256": "502ce74f0bfb86839cd9c944700f9517d068537797485d50fab79faf9f6565e7" },
+    "darwin-x64": { "name": "Folia-0.7.27-x64.zip", "sha256": "71a61df4a8847cdbd6ef2d4f85b3a51238204f725b476362a7fc436681f3128e" },
+    "win32-x64": { "name": "Folia-Setup-0.7.27.exe", "sha256": "604396d66898a97c1e561f3f48029a61a1546e10f1209aeb768cf1fc007d6bab" }
+  },
+  "windowsTools": {
+    "url": "https://github.com/FFmpeg-Builds/FFmpeg-Builds/releases/download/latest/ffmpeg-n8.1-latest-win64-gpl-8.1.zip",
+    "sha256": "e54b2fdb1af658faf60ebc805886f73d9c9903c6183c929ebb0aae6065d860a4"
+  }
+}
