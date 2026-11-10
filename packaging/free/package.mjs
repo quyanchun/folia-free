@@ -10,7 +10,7 @@ import { execFileSync } from 'node:child_process';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const require = createRequire(path.join(root, 'package.json'));
 const asar = require('@electron/asar');
-const { isForeignPrebuild } = require('./runtimeFiles.cjs');
+const { isForeignPrebuild } = require(path.join(root, 'packaging/free/runtimeFiles.cjs'));
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'packaging/free/upstream.json')));
 const metadata = JSON.parse(fs.readFileSync(path.join(root, 'package.json')));
 const platform = process.platform;
