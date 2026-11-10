@@ -74,7 +74,7 @@ for (const file of asar.listPackage(originalAsar).map(file => file.slice(1))) {
     }
     if (stat.unpacked && !fs.existsSync(originalAsar + '.unpacked/' + file)) {
         const foreign = platform === 'darwin' ? /prebuilds\/(?:linux-|win32-)/ : /prebuilds\/(?:linux-|darwin-)/;
-        if (foreign.test(file)) continue;
+        if (foreign.test(file.replaceAll('\\', '/'))) continue;
         throw new Error(`Missing upstream native file: ${file}`);
     }
     fs.writeFileSync(target, asar.extractFile(originalAsar, file));
