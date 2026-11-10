@@ -94,7 +94,8 @@ def get_tracks(source, kind, identifier, offset, limit):
         tracks = listing.get('tracks') or []
         # This public API may expose only a prefix. Never invent later pages or bypass login.
         songs = [song(source, r['id'], r['name'], '、'.join(a['name'] for a in r.get('artists', r.get('ar', []))),
-                      (r.get('album') or r.get('al') or {}).get('name'), (r.get('duration') or r.get('dt') or 0) // 1000)
+                      (r.get('album') or r.get('al') or {}).get('name'), (r.get('duration') or r.get('dt') or 0) // 1000,
+                      playable=r.get('fee') not in (1, 4), downloadable=r.get('fee') not in (1, 4))
                  for r in tracks[offset:offset + limit]]
         return {'songs': songs, 'total': len(tracks), 'limited': int(listing.get('trackCount') or 0) > len(tracks)}
     if source == 'kuwo':
@@ -110,7 +111,8 @@ def get_tracks(source, kind, identifier, offset, limit):
         rows = body.get('musiclist') or []
         songs = [song(source, re.sub(r'^MUSIC_', '', str(r.get('id') or r.get('rid') or r.get('musicrid'))),
                       r.get('name') or r.get('songname'), r.get('artist'), r.get('album') or (body.get('name') if kind == 'album' else ''),
-                      r.get('duration') or r.get('song_duration') or 0) for r in rows]
+                      r.get('duration') or r.get('song_duration') or 0,
+                      playable=kuwo_free(r), downloadable=kuwo_free(r)) for r in rows]
         return {'songs': songs, 'total': total or len(songs)}
     if source == 'migu' and kind == 'playlist':
         body = fetch('https://app.c.nf.migu.cn/MIGUM3.0/resource/playlist/song/v2.0',
@@ -128,3 +130,10 @@ def get_tracks(source, kind, identifier, offset, limit):
                               r.get('duration'), playable=not vip, downloadable=not vip))
         return {'songs': songs, 'total': int(data.get('totalCount') or len(songs))}
     raise ValueError('Unsupported public collection')
+
+
+def kuwo_free(record):
+    """Only explicit full-play restrictions exclude a track; VIP quality alone does not."""
+    pay = record.get('payInfo') or {}
+    return str(record.get('online', '1')) != '0' and not any(
+        str(pay.get(field, '0')) == '1' for field in ('cannotOnlinePlay', 'listen_fragment'))

@@ -58,7 +58,7 @@ def resolve_audio(song_id):
     response.raise_for_status()
     data = response.json()
     audio = data.get('data') or {}
-    if data.get('code') != 200 or not audio.get('url') or audio.get('format') != 'mp3':
+    if data.get('code') != 200 or not audio.get('url') or audio.get('format') not in ('mp3', 'aac', 'm4a'):
         raise ValueError('未取得可播放的标准音频')
     return audio
 
@@ -68,7 +68,7 @@ def download(record, directory, progress_path=None):
         raise ValueError('这首歌暂时无法试听或下载')
     audio = resolve_audio(record['id'])
     name = re.sub(r'[\\/:*?"<>|]', '', f"{record['singer']} - {record['title']}").strip()[:70]
-    path = Path(directory) / ((name or 'audio') + '.mp3')
+    path = Path(directory) / ((name or 'audio') + '.' + audio['format'])
     from audio_transfer import download as transfer
     transfer(audio['url'], path, HEADERS, progress_path)
     return audio.get('bitrate') or None

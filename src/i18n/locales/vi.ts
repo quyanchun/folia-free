@@ -3884,6 +3884,21 @@ export default {
     "noDescription": "Chưa có mô tả",
   },
   "releaseNotes": {
+    "v1_0_1": {
+      "intro": "Folia 音乐站 1.0.1 cải thiện danh mục công khai và phát nhạc Kuwo.",
+      "filteredCatalog": {
+        "title": "Kiểm tra danh mục và bài hát",
+        "description": "Ẩn bộ sưu tập không đọc được và bài hát bị hạn chế rõ ràng. Lỗi tạm thời có thể thử lại."
+      },
+      "standardAudio": {
+        "title": "Sửa phát AAC của Kuwo",
+        "description": "Chấp nhận âm thanh chuẩn AAC và M4A ngoài MP3, giữ nguyên định dạng mà không chuyển mã."
+      },
+      "freeOnly": {
+        "title": "Chỉ hỗ trợ nhạc miễn phí",
+        "description": "Không hỗ trợ nhạc VIP hoặc trả phí. Đây không phải bản bẻ khóa; kiểm tra không bảo đảm luôn phát được."
+      }
+    },
     "v1_0_0": {
       "intro": "Folia 音乐站 tích hợp năm nguồn nhạc công khai, không cần đăng nhập.",
       "builtIn": {

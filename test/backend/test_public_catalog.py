@@ -34,6 +34,20 @@ class PublicCatalogTests(unittest.TestCase):
         self.assertEqual(result['songs'][0]['duration_seconds'], 123)
 
     @patch.object(catalog, 'fetch')
+    def test_netease_vip_and_paid_tracks_are_explicitly_restricted(self, fetch):
+        fetch.return_value = {'result': {'tracks': [
+            {'id': fee + 1, 'name': 'Song', 'fee': fee} for fee in (0, 1, 4, 8)
+        ]}}
+        tracks = catalog.get_tracks('netease', 'playlist', '456', 0, 30)['songs']
+        self.assertEqual([s['playable'] for s in tracks], [True, False, False, True])
+
+    def test_kuwo_standard_play_is_not_confused_with_vip_quality(self):
+        self.assertTrue(catalog.kuwo_free({'payInfo': {'feeType': {'vip': '1'}, 'listen_fragment': '0'}}))
+        self.assertFalse(catalog.kuwo_free({'payInfo': {'listen_fragment': '1'}}))
+        self.assertFalse(catalog.kuwo_free({'payInfo': {'cannotOnlinePlay': '1'}}))
+        self.assertFalse(catalog.kuwo_free({'online': '0'}))
+
+    @patch.object(catalog, 'fetch')
     def test_kuwo_album_uses_numeric_playback_id_and_page_number(self, fetch):
         fetch.return_value = {'name': 'Album', 'songnum': 65, 'musiclist': [
             {'id': 'MUSIC_476991828', 'name': 'Title', 'artist': 'Artist', 'duration': '99'}

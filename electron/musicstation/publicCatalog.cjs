@@ -1,5 +1,6 @@
 const { qqList, qqTracks } = require('../qq/publicStation.cjs');
 const { createKugouPublicCatalog } = require('../kugou/publicStation.cjs');
+const { createAvailableCatalog } = require('./catalogAvailability.cjs');
 
 // Aggregate only anonymous adapters; signed-in services are independent.
 const ALBUM_SOURCES = new Set(['qq', 'kugou', 'kuwo']);
@@ -22,7 +23,6 @@ function validateCatalogRequest(operation, params) {
 }
 
 function createPublicCatalog(call) {
-    const cache = new Map();
     const { kugouList, kugouTracks } = createKugouPublicCatalog();
     async function read(operation, params) {
         const { source, kind } = params;
@@ -33,15 +33,6 @@ function createPublicCatalog(call) {
         const registered = await call('catalog-import', { songs: result.songs });
         return { ...result, songs: registered.songs };
     }
-    return async (operation, params) => {
-        const key = JSON.stringify([operation, params]);
-        const old = cache.get(key);
-        if (old && Date.now() - old.at < 300000) return old.promise;
-        if (cache.size >= 100) cache.delete(cache.keys().next().value);
-        const entry = { at: Date.now() };
-        entry.promise = read(operation, params).catch(error => { if (cache.get(key) === entry) cache.delete(key); throw error; });
-        cache.set(key, entry);
-        return entry.promise;
-    };
+    return createAvailableCatalog(read);
 }
 module.exports = { createPublicCatalog, validateCatalogRequest };

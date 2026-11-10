@@ -12,6 +12,8 @@
 
 ## 安装依赖和检查
 
+在本仓库根目录执行。Python 使用项目自己的虚拟环境：macOS / Linux 执行 `python3 -m venv .venv` 和 `source .venv/bin/activate`；Windows 执行 `python -m venv .venv` 和 `.venv\Scripts\Activate.ps1`。
+
 ```sh
 npm ci
 python -m pip install -r backend/core/requirements.txt pyinstaller==6.22.3

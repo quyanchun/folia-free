@@ -18,10 +18,10 @@ type NewFeaturesRelease = {
 
 // Defines the current release's cards; their localized text lives under i18nKey in every locale.
 export const NEW_FEATURES_RELEASE: NewFeaturesRelease = {
-    i18nKey: 'releaseNotes.v1_0_0',
+    i18nKey: 'releaseNotes.v1_0_1',
     features: [
-        { id: 'builtIn', icon: Music },
-        { id: 'catalog', icon: Globe },
+        { id: 'filteredCatalog', icon: Globe },
+        { id: 'standardAudio', icon: Music },
         { id: 'freeOnly', icon: Sparkles },
     ],
 };

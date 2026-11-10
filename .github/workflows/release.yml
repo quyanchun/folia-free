@@ -62,7 +62,7 @@ jobs:
         shell: bash
         run: |
           npm run typecheck
-          npm run test:unit -- test/unit/onlineMusic/stationProvider.test.ts test/unit/electron/musicStationBridge.test.ts test/unit/electron/publicCatalog.test.ts test/unit/electron/freePackaging.test.ts test/unit/library/core/homeSources.test.ts test/unit/onlineMusic/omniArchitecture.test.ts
+          npm run test:unit -- test/unit/onlineMusic/stationProvider.test.ts test/unit/electron/musicStationBridge.test.ts test/unit/electron/publicCatalog.test.ts test/unit/electron/catalogAvailability.test.ts test/unit/electron/freePackaging.test.ts test/unit/library/core/homeSources.test.ts test/unit/onlineMusic/omniArchitecture.test.ts test/unit/realecoReleaseMetadata.test.ts
           python -m unittest discover -s test/backend -v
       - name: Build self-contained backend
         run: npm run build:backend
@@ -108,4 +108,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
-          gh release create "$GITHUB_REF_NAME" --verify-tag --title "Folia 音乐站 $GITHUB_REF_NAME" --notes-file docs/releases/v1.0.0.md release/*
+          gh release create "$GITHUB_REF_NAME" --verify-tag --title "Folia 音乐站 $GITHUB_REF_NAME" --notes-file "docs/releases/$GITHUB_REF_NAME.md" release/*

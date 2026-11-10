@@ -3884,6 +3884,21 @@ export default {
     "noDescription": "No description available",
   },
   "releaseNotes": {
+    "v1_0_1": {
+      "intro": "Folia 音乐站 1.0.1 improves public catalog availability and Kuwo audio playback.",
+      "filteredCatalog": {
+        "title": "Catalog and track checks",
+        "description": "Hide unreadable public collections and explicitly restricted tracks. Temporary failures can be retried."
+      },
+      "standardAudio": {
+        "title": "Kuwo AAC playback fix",
+        "description": "Accept standard AAC and M4A audio as well as MP3, keeping the original format without transcoding."
+      },
+      "freeOnly": {
+        "title": "Free tracks only",
+        "description": "VIP and paid music remain unsupported. This is not a cracked app; preflight cannot guarantee live playback."
+      }
+    },
     "v1_0_0": {
       "intro": "Folia 音乐站 includes five public music sources, ready to use without signing in.",
       "builtIn": {

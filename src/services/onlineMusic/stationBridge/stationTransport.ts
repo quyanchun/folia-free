@@ -17,7 +17,9 @@ export interface StationSong {
     playable?: boolean;
     downloadable?: boolean;
 }
-export interface StationSongPage { songs: StationSong[]; total?: number; failed?: string[] }
+export interface StationSongPage { songs: StationSong[]; total?: number; hasMore?: boolean; failed?: string[] }
+
+export const isFreeStationSong = (song: StationSong) => song.playable !== false && song.downloadable !== false;
 
 export const getStationAvailability = () => typeof window !== 'undefined'
     && typeof window.electron?.musicStationRequest === 'function'

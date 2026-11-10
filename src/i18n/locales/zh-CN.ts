@@ -3884,6 +3884,21 @@ export default {
     "noDescription": "暂无详细介绍",
   },
   "releaseNotes": {
+    "v1_0_1": {
+      "intro": "Folia 音乐站 1.0.1：减少打不开的歌单，修复酷我标准音频播放。",
+      "filteredCatalog": {
+        "title": "歌单与曲目预检查",
+        "description": "隐藏当前读不了的公开歌单，过滤明确受限的歌曲；暂时失败可刷新重试。"
+      },
+      "standardAudio": {
+        "title": "酷我 AAC 播放修复",
+        "description": "标准音频返回 AAC 或 M4A 时也能正常读取，保留正确格式，无需转码。"
+      },
+      "freeOnly": {
+        "title": "仅支持免费曲目",
+        "description": "会员及付费音乐不支持，非破解版。预检查无法保证每首歌实时可播。"
+      }
+    },
     "v1_0_0": {
       "intro": "Folia 音乐站：内置五个免费音源，下载即可使用。",
       "builtIn": {

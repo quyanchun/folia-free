@@ -5,7 +5,7 @@ import { OnlineProviderError } from '../../../types/onlineMusic';
 import { createProviderSongMetadata } from '../../../utils/songMetadata';
 import { parseLRC } from '../../../utils/lrcParser';
 import { cacheLimitBytes } from '../../audioCache';
-import { getStationAvailability, stationRequest } from './stationTransport';
+import { getStationAvailability, isFreeStationSong, stationRequest } from './stationTransport';
 import type { StationSource, StationProviderId, StationSong, StationSongPage } from './stationTransport';
 
 // The desktop adapters consume the same local contract; raw platform rules stay in Python.
@@ -77,7 +77,7 @@ export function createStationProvider(id: StationProviderId, displayName: string
             const successful = replies.filter(reply => reply.status === 'fulfilled');
             if (!successful.length) throw (replies[0] as PromiseRejectedResult).reason;
             // Preserve source identities and show results even when one public source is down.
-            const songs = successful.flatMap(reply => reply.value.songs).map(normalizeSong);
+            const songs = successful.flatMap(reply => reply.value.songs).filter(isFreeStationSong).map(normalizeSong);
             searchCache = { query, at: Date.now(), songs };
             const items = songs.slice(offset, offset + limit);
             return { items, total: songs.length, hasMore: offset + items.length < songs.length, nextOffset: offset + items.length };
@@ -123,7 +123,7 @@ export function createStationProvider(id: StationProviderId, displayName: string
                 // Offset counts playable records, not upstream slots that may be filtered out.
                 while (all.length < offset + desired && !end) {
                     const result = await stationRequest<StationSongPage>(id, 'chart', { source, chart, page });
-                    all.push(...result.songs);
+                    all.push(...result.songs.filter(isFreeStationSong));
                     end = result.total !== undefined ? page * 30 >= result.total : result.songs.length < 30;
                     if (page >= 100) end = true;
                     page += 1;

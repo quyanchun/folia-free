@@ -3884,6 +3884,21 @@ export default {
     "noDescription": "Tidak ada deskripsi tersedia"
   },
   "releaseNotes": {
+    "v1_0_1": {
+      "intro": "Folia 音乐站 1.0.1 meningkatkan katalog publik dan pemutaran audio Kuwo.",
+      "filteredCatalog": {
+        "title": "Pemeriksaan katalog dan lagu",
+        "description": "Sembunyikan koleksi yang tidak dapat dibaca dan lagu yang jelas dibatasi. Kegagalan sementara dapat dicoba ulang."
+      },
+      "standardAudio": {
+        "title": "Perbaikan audio AAC Kuwo",
+        "description": "Audio standar AAC dan M4A kini diterima selain MP3, dengan format asli tanpa konversi."
+      },
+      "freeOnly": {
+        "title": "Hanya lagu gratis",
+        "description": "Musik VIP dan berbayar tidak didukung. Ini bukan versi bajakan; pemeriksaan tidak menjamin pemutaran setiap saat."
+      }
+    },
     "v1_0_0": {
       "intro": "Folia 音乐站 menyertakan lima sumber musik publik tanpa perlu masuk.",
       "builtIn": {

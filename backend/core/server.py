@@ -357,7 +357,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.end_headers()
                 return
         self.send_response(206 if requested else 200)
-        mime = {'.mp3': 'audio/mpeg', '.flac': 'audio/flac', '.m4a': 'audio/mp4',
+        mime = {'.mp3': 'audio/mpeg', '.flac': 'audio/flac', '.m4a': 'audio/mp4', '.aac': 'audio/aac',
                 '.ape': 'audio/ape', '.ogg': 'audio/ogg', '.wav': 'audio/wav', '.zip': 'application/zip'}
         self.session_header()
         self.send_header('Content-Type', mime.get(file.suffix.lower(), 'application/octet-stream'))

@@ -6,7 +6,8 @@ import type { StationSong } from '../../../src/services/onlineMusic/stationBridg
 import { createRequire } from 'node:module';
 
 // Exercise source identity, paging and the local IPC boundary without platform traffic.
-vi.mock('../../../src/services/onlineMusic/stationBridge/stationTransport', () => ({
+vi.mock('../../../src/services/onlineMusic/stationBridge/stationTransport', async importOriginal => ({
+    ...await importOriginal<typeof import('../../../src/services/onlineMusic/stationBridge/stationTransport')>(),
     getStationAvailability: () => ({ configured: true }), stationRequest: vi.fn(),
 }));
 vi.mock('../../../src/services/audioCache', () => ({ cacheLimitBytes: () => 1024 }));
@@ -41,6 +42,11 @@ describe('music station provider', () => {
         expect((await builtIn.search!.searchSongs('test', 30, 0)).items).toHaveLength(1);
         request.mockRejectedValue(new Error('all down'));
         await expect(builtIn.search!.searchSongs('other', 30, 0)).rejects.toThrow('all down');
+    });
+    it('filters known restricted search and chart songs while keeping unknown rights', async () => {
+        request.mockResolvedValue({ songs: [song(1), { ...song(2), playable: false }, { ...song(3), downloadable: false }], total: 3 });
+        expect((await provider.search!.searchSongs('free only', 30, 0)).items.map(s => s.name)).toEqual(['Song 1']);
+        expect((await provider.catalog!.getPlaylistTracks!('hot', 30, 0)).items.map(s => s.name)).toEqual(['Song 1']);
     });
     it('distinguishes upstream failure envelopes from an actual empty search', async () => {
         const builtIn = createStationProvider('musicstation', 'Built-in', '#abc', true, ['kuwo', 'migu']);
@@ -154,6 +160,24 @@ describe('anonymous built-in public catalogs', () => {
     it('reports all-source failure, rather than an empty successful catalog', async () => {
         request.mockRejectedValue(Error('offline'));
         await expect(builtIn().catalog!.getPublicCollections!('playlists', 30, 0)).rejects.toThrow();
+    });
+    it('propagates a source with temporarily hidden cards as a partial catalog', async () => {
+        request.mockImplementation(async (_provider, _op, params) => ({
+            collections: [{ source: params.source, kind: 'playlist', id: '123', name: 'Playlist' }], partial: true,
+        }) as never);
+        expect((await builtIn().catalog!.getPublicCollections!('playlists', 30, 0)).partial).toBe(true);
+    });
+    it('pages by visible songs while skipping restricted rows, including a fully restricted first page', async () => {
+        request.mockImplementation(async (_provider, _op, params) => ({
+            songs: Array.from({ length: 30 }, (_, n) => ({ ...song(Number(params.offset) + n + 1), source: 'migu', playable: params.offset !== 0 })),
+            total: 60,
+        }) as never);
+        const p = builtIn();
+        const first = await p.catalog!.getPlaylistTracks!('public:migu:playlist:123', 10, 0);
+        const next = await p.catalog!.getPlaylistTracks!('public:migu:playlist:123', 10, first.nextOffset!);
+        expect(first.items.map(s => s.name)).toEqual(Array.from({ length: 10 }, (_, n) => 'Song ' + (n + 31)));
+        expect(next.items.map(s => s.name)).toEqual(Array.from({ length: 10 }, (_, n) => 'Song ' + (n + 41)));
+        expect(next.nextOffset).toBe(20);
     });
     it('opens albums through catalog tracks, keeping stable song keys and page offsets', async () => {
         request.mockImplementation(async (_provider, operation, params) => {

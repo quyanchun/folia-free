@@ -2,7 +2,7 @@ import i18n from 'i18next';
 import type { UnifiedSong } from '../../../types';
 import type { OnlineCatalogProvider, ProviderCollection, PublicCatalogKind } from '../../../types/onlineMusic';
 import { OnlineProviderError } from '../../../types/onlineMusic';
-import { stationRequest } from '../stationBridge/stationTransport';
+import { isFreeStationSong, stationRequest } from '../stationBridge/stationTransport';
 import type { StationProviderId, StationSource, StationSongPage } from '../stationBridge/stationTransport';
 
 // Public collection identities stay separate from charts and from signed-in platform collections.
@@ -56,9 +56,9 @@ export function createStationCatalog(providerId: StationProviderId, sources: rea
         const desired = Math.max(1, Math.min(limit, 200));
         while (!end && songs.length < offset + desired) {
             const page = await stationRequest<StationSongPage>(providerId, 'catalog-tracks', { ...ref, offset: cursor, limit: 30 });
-            songs.push(...page.songs);
+            songs.push(...page.songs.filter(isFreeStationSong));
             cursor += 30;
-            end = page.total !== undefined ? cursor >= page.total : page.songs.length < 30;
+            end = page.hasMore !== undefined ? !page.hasMore : page.total !== undefined ? cursor >= page.total : page.songs.length < 30;
             if (cursor >= 10020) end = true;
         }
         const items = songs.slice(offset, offset + desired).map(normalizeSong);
@@ -71,11 +71,11 @@ export function createStationCatalog(providerId: StationProviderId, sources: rea
         async getPublicCollections(kind: PublicCatalogKind, limit: number, offset: number) {
             const selected = sources.filter(source => kind !== 'albums' || albumSources.includes(source));
             const replies = await Promise.allSettled(selected.map(async source => {
-                const result = await stationRequest<{ collections: StationCollection[] }>(providerId, 'catalog-list', { source, kind });
+                const result = await stationRequest<{ collections: StationCollection[]; partial?: boolean }>(providerId, 'catalog-list', { source, kind });
                 if (!result.collections.length) throw new OnlineProviderError('unavailable', 'Empty public source', providerId);
-                return result.collections.map(normalize);
+                return { items: result.collections.map(normalize), partial: result.partial === true };
             }));
-            const rows = replies.flatMap(reply => reply.status === 'fulfilled' ? [reply.value] : []);
+            const rows = replies.flatMap(reply => reply.status === 'fulfilled' ? [reply.value.items] : []);
             if (!rows.length) throw new OnlineProviderError('unavailable', i18n.t('publicCatalog.catalogUnavailable'), providerId);
             // Round-robin keeps all five sources represented even in a short first page.
             const items: ProviderCollection[] = [];
@@ -86,7 +86,8 @@ export function createStationCatalog(providerId: StationProviderId, sources: rea
             console.info('[MusicStation] Public catalog', { kind, sources: rows.length, failed: failures.length, count: items.length });
             const page = items.slice(offset, offset + limit);
             return { items: page, total: items.length, nextOffset: offset + page.length,
-                hasMore: offset + page.length < items.length, partial: failures.length > 0 };
+                hasMore: offset + page.length < items.length,
+                partial: failures.length > 0 || replies.some(reply => reply.status === 'fulfilled' && reply.value.partial) };
         },
     };
 }
