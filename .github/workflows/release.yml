@@ -2,7 +2,6 @@ name: Build and release Folia 音乐站
 
 on:
   push:
-    branches: [main]
     tags: ['v*']
   workflow_dispatch:
 
@@ -63,7 +62,7 @@ jobs:
         shell: bash
         run: |
           npm run typecheck
-          npm run test:unit -- test/unit/onlineMusic/stationProvider.test.ts test/unit/electron/musicStationBridge.test.ts test/unit/electron/publicCatalog.test.ts test/unit/library/core/homeSources.test.ts test/unit/onlineMusic/omniArchitecture.test.ts
+          npm run test:unit -- test/unit/onlineMusic/stationProvider.test.ts test/unit/electron/musicStationBridge.test.ts test/unit/electron/publicCatalog.test.ts test/unit/electron/freePackaging.test.ts test/unit/library/core/homeSources.test.ts test/unit/onlineMusic/omniArchitecture.test.ts
           python -m unittest discover -s test/backend -v
       - name: Build self-contained backend
         run: npm run build:backend

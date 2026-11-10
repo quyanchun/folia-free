@@ -10,6 +10,7 @@ import { execFileSync } from 'node:child_process';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const require = createRequire(path.join(root, 'package.json'));
 const asar = require('@electron/asar');
+const { isForeignPrebuild } = require('./runtimeFiles.cjs');
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'packaging/free/upstream.json')));
 const metadata = JSON.parse(fs.readFileSync(path.join(root, 'package.json')));
 const platform = process.platform;
@@ -73,8 +74,7 @@ for (const file of asar.listPackage(originalAsar).map(file => file.slice(1))) {
         fs.symlinkSync(path.relative(path.dirname(target), destination), target); continue;
     }
     if (stat.unpacked && !fs.existsSync(originalAsar + '.unpacked/' + file)) {
-        const foreign = platform === 'darwin' ? /prebuilds\/(?:linux-|win32-)/ : /prebuilds\/(?:linux-|darwin-)/;
-        if (foreign.test(file.replaceAll('\\', '/'))) continue;
+        if (isForeignPrebuild(file, platform, arch)) continue;
         throw new Error(`Missing upstream native file: ${file}`);
     }
     fs.writeFileSync(target, asar.extractFile(originalAsar, file));
