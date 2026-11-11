@@ -96,7 +96,10 @@ function createMusicStationBridge({ app, protocol, net, dataRoot, onCacheWrite =
         try {
             const payload = validateRequest(operation, params);
             if (operation === 'media') { mediaRequests += 1; acquiring = true; }
-            const data = await (operation.startsWith('catalog-') ? publicCatalog(operation, payload) : call(operation, payload));
+            // Browsing results (public catalogs, charts and searches) all pass
+            // the same audio verification before any row reaches the renderer.
+            const verified = operation.startsWith('catalog-') || operation === 'search' || operation === 'chart';
+            const data = await (verified ? publicCatalog(operation, payload) : call(operation, payload));
             if (operation === 'media') {
                 pinnedCacheEntry = data.cache_entry;
                 if (pinForStream) streamPins.set(data.cache_entry, (streamPins.get(data.cache_entry) || 0) + 1);

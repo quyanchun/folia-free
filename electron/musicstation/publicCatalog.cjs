@@ -13,11 +13,13 @@ function validateCatalogRequest(operation, params) {
         return { source: params.source, kind: params.kind };
     }
     if (operation === 'catalog-tracks') {
+        // Small pages let the home-screen preflight sample only a few tracks.
         if (!['playlist', 'album'].includes(params.kind) || (params.kind === 'album' && !ALBUM_SOURCES.has(params.source))
             || typeof params.id !== 'string' || !/^[A-Za-z0-9_]{1,90}$/.test(params.id)
             || !Number.isInteger(params.offset) || params.offset < 0 || params.offset > 10000
-            || params.limit !== 30 || params.offset % 30) throw new Error('Invalid public collection');
-        return { source: params.source, kind: params.kind, id: params.id, offset: params.offset, limit: 30 };
+            || !Number.isInteger(params.limit) || params.limit < 1 || params.limit > 30
+            || params.offset % params.limit) throw new Error('Invalid public collection');
+        return { source: params.source, kind: params.kind, id: params.id, offset: params.offset, limit: params.limit };
     }
     throw new Error('Invalid catalog operation');
 }
@@ -26,6 +28,9 @@ function createPublicCatalog(call) {
     const { kugouList, kugouTracks } = createKugouPublicCatalog();
     async function read(operation, params) {
         const { source, kind } = params;
+        // Only public playlists/albums use the local adapters. Searches and
+        // charts for these same providers must keep going to the service API.
+        if (operation !== 'catalog-list' && operation !== 'catalog-tracks') return call(operation, params);
         if (source !== 'qq' && source !== 'kugou') return call(operation, params);
         if (operation === 'catalog-list') return { collections: await (source === 'qq' ? qqList(kind) : kugouList(kind)) };
         const result = await (source === 'qq' ? qqTracks(params) : kugouTracks(params));
@@ -33,6 +38,6 @@ function createPublicCatalog(call) {
         const registered = await call('catalog-import', { songs: result.songs });
         return { ...result, songs: registered.songs };
     }
-    return createAvailableCatalog(read);
+    return createAvailableCatalog(read, keys => call('availability', { keys }));
 }
 module.exports = { createPublicCatalog, validateCatalogRequest };

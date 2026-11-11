@@ -190,6 +190,29 @@ class DesktopHandler(Handler):
                 ):
                     raise ValueError('Invalid catalog songs')
                 return self.reply({'songs': self.server.remember(songs)})
+            if self.path == '/desktop/availability':
+                # Batch preflight: prove a real audio stream exists before the
+                # desktop UI shows a collection or one of its tracks.
+                from availability import KEY_PATTERN, MAX_KEYS, cached_audio_ok, checker
+                keys = payload['keys']
+                if (not isinstance(keys, list) or len(keys) > MAX_KEYS
+                        or any(not isinstance(key, str) or not KEY_PATTERN.fullmatch(key) for key in keys)):
+                    raise ValueError('Invalid availability keys')
+                with self.server.lock:
+                    entries = [(key, self.server.records.get(key)) for key in keys]
+                states, pending = {}, []
+                for key, entry in entries:
+                    if not entry:
+                        states[key] = 'unavailable'
+                    elif entry.get('file') and cached_audio_ok(entry['file']):
+                        states[key] = 'playable'
+                    else:
+                        pending.append((key, entry['song']))
+                if pending:
+                    verdicts = checker.check_many([song for _, song in pending])
+                    states.update({key: verdict for (key, _), verdict in zip(pending, verdicts)})
+                return self.reply({'results': states,
+                                   'partial': any(state == 'unknown' for state in states.values())})
             if self.path == '/desktop/search':
                 source = payload['source']
                 query = payload['query']
