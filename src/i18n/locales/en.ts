@@ -3884,6 +3884,21 @@ export default {
     "noDescription": "No description available",
   },
   "releaseNotes": {
+    "v1_0_2": {
+      "intro": "Folia Music Station 1.0.2 shows only tracks with a confirmed audio stream, so fewer playlists fail on click.",
+      "verifiedAudio": {
+        "title": "Real audio verification",
+        "description": "Playlists, charts and search results resolve a real stream and check its first bytes instead of trusting platform playable flags."
+      },
+      "hiddenUnplayable": {
+        "title": "Hide unplayable items",
+        "description": "A collection with no playable sample is hidden, and tracks confirmed unplayable are filtered out."
+      },
+      "temporaryOutage": {
+        "title": "Graceful source outages",
+        "description": "Unverified tracks are hidden while a relay fails or rate limits apply, with a short retry window; QQ tracks may disappear temporarily."
+      }
+    },
     "v1_0_1": {
       "intro": "Folia 音乐站 1.0.1 improves public catalog availability and Kuwo audio playback.",
       "filteredCatalog": {

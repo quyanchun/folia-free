@@ -1,4 +1,4 @@
-import { Globe, Music, Sparkles } from 'lucide-react';
+import { AudioLines, EyeOff, RefreshCw } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 // src/components/modal/newFeaturesRelease.ts
@@ -18,10 +18,10 @@ type NewFeaturesRelease = {
 
 // Defines the current release's cards; their localized text lives under i18nKey in every locale.
 export const NEW_FEATURES_RELEASE: NewFeaturesRelease = {
-    i18nKey: 'releaseNotes.v1_0_1',
+    i18nKey: 'releaseNotes.v1_0_2',
     features: [
-        { id: 'filteredCatalog', icon: Globe },
-        { id: 'standardAudio', icon: Music },
-        { id: 'freeOnly', icon: Sparkles },
+        { id: 'verifiedAudio', icon: AudioLines },
+        { id: 'hiddenUnplayable', icon: EyeOff },
+        { id: 'temporaryOutage', icon: RefreshCw },
     ],
 };

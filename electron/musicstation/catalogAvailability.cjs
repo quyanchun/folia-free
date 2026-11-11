@@ -1,6 +1,6 @@
 // Verify real audio while browsing. Platform metadata flags are not enough:
-// Kugou public playlists mark paid songs as playable, and only playInfo reveals
-// the empty URL at playback time. Only rows with a confirmed audio stream are
+// some public playlists mark paid songs as playable, and only the URL API reveals
+// the empty stream at playback time. Only rows with a confirmed audio stream are
 // shown; 'unknown' (rate limit, timeout, relay outage) is hidden as well but
 // stays on a short retry TTL, so a dead provider cannot fill the list with
 // songs that all fail on click. Sampling is tiny and the service-side circuit

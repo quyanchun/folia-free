@@ -3884,6 +3884,21 @@ export default {
     "noDescription": "Tidak ada deskripsi tersedia"
   },
   "releaseNotes": {
+    "v1_0_2": {
+      "intro": "Folia 音乐站 1.0.2 hanya menampilkan lagu dengan aliran audio terverifikasi, mengurangi daftar putar yang gagal diputar.",
+      "verifiedAudio": {
+        "title": "Verifikasi audio nyata",
+        "description": "Daftar putar, tangga lagu, dan hasil pencarian memeriksa aliran audio nyata, bukan hanya tanda dapat diputar dari platform."
+      },
+      "hiddenUnplayable": {
+        "title": "Sembunyikan yang tak bisa diputar",
+        "description": "Koleksi tanpa satu pun lagu yang dapat diputar disembunyikan; lagu yang dipastikan gagal dihapus dari daftar."
+      },
+      "temporaryOutage": {
+        "title": "Gangguan sumber sementara",
+        "description": "Lagu yang belum terverifikasi disembunyikan saat layanan gagal atau dibatasi, lalu dapat dicoba lagi; lagu QQ mungkin hilang sementara."
+      }
+    },
     "v1_0_1": {
       "intro": "Folia 音乐站 1.0.1 meningkatkan katalog publik dan pemutaran audio Kuwo.",
       "filteredCatalog": {

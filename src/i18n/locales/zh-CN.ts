@@ -3884,6 +3884,21 @@ export default {
     "noDescription": "暂无详细介绍",
   },
   "releaseNotes": {
+    "v1_0_2": {
+      "intro": "Folia 音乐站 1.0.2：只展示确认能播的歌曲，减少点开就报错的歌单。",
+      "verifiedAudio": {
+        "title": "按真实音频验证",
+        "description": "获取歌单、榜单和搜索结果时先取真实播放地址并确认是音频，不再只信平台的「可播」标记。"
+      },
+      "hiddenUnplayable": {
+        "title": "播不了的不再展示",
+        "description": "整张歌单没有一首可播就隐藏；单曲确认不可播则从列表中过滤。"
+      },
+      "temporaryOutage": {
+        "title": "音源故障自动降级",
+        "description": "解析服务失效或限流时暂时隐藏未确认条目，短暂熔断后刷新可重试；QQ 音源当前可能因此暂时不显示。"
+      }
+    },
     "v1_0_1": {
       "intro": "Folia 音乐站 1.0.1：减少打不开的歌单，修复酷我标准音频播放。",
       "filteredCatalog": {

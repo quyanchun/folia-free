@@ -3884,6 +3884,21 @@ export default {
     "noDescription": "Chưa có mô tả",
   },
   "releaseNotes": {
+    "v1_0_2": {
+      "intro": "Folia 音乐站 1.0.2 chỉ hiển thị bài hát có luồng âm thanh đã xác thực, giảm danh sách phát lỗi khi bấm phát.",
+      "verifiedAudio": {
+        "title": "Xác thực âm thanh thực",
+        "description": "Danh sách phát, bảng xếp hạng và kết quả tìm kiếm kiểm tra luồng âm thanh thay vì chỉ dựa vào nhãn có thể phát."
+      },
+      "hiddenUnplayable": {
+        "title": "Ẩn bài không phát được",
+        "description": "Bộ sưu tập không có bài nào phát được sẽ bị ẩn; bài đã xác nhận lỗi bị loại khỏi danh sách."
+      },
+      "temporaryOutage": {
+        "title": "Xử lý sự cố nguồn",
+        "description": "Bài chưa xác thực tạm thời bị ẩn khi dịch vụ lỗi hoặc bị giới hạn, có thể thử lại; bài QQ có thể tạm biến mất."
+      }
+    },
     "v1_0_1": {
       "intro": "Folia 音乐站 1.0.1 cải thiện danh mục công khai và phát nhạc Kuwo.",
       "filteredCatalog": {
